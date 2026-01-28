@@ -13,11 +13,11 @@ import net.kyrptonaught.kyrptconfig.keybinding.DisplayOnlyKeyBind;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
 
 @Environment(EnvType.CLIENT)
 public class QuickShulkerModClient implements ClientModInitializer {
@@ -25,19 +25,19 @@ public class QuickShulkerModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientTickEvents.START_WORLD_TICK.register(clientWorld -> {
-            if (MinecraftClient.getInstance().currentScreen == null && QuickShulkerMod.getConfig().keybind) {
-                PlayerEntity player = MinecraftClient.getInstance().player;
+            if (Minecraft.getInstance().screen == null && QuickShulkerMod.getConfig().keybind) {
+                Player player = Minecraft.getInstance().player;
                 if (getKeybinding().isKeybindPressed() && player != null) {
-                    if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty())
-                        ClientUtil.CheckAndSend(player.getOffHandStack(), 45);
+                    if (player.getMainHandItem().isEmpty() && !player.getOffhandItem().isEmpty())
+                        ClientUtil.CheckAndSend(player.getOffhandItem(), 45);
                     else
-                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.getInventory().getSelectedSlot());
+                        ClientUtil.CheckAndSend(player.getMainHandItem(), 36 + player.getInventory().getSelectedSlot());
                 }
             }
         });
         PayloadTypeRegistry.playS2C().register(OpenInventoryPacket.ID, OpenInventoryPacket.CODEC);
         ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.ID, (payload, context) -> {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             client.execute(() -> {
                 client.setScreen(new InventoryScreen(context.player()));
             });
@@ -47,7 +47,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
 
         KeyBindingHelper.registerKeyBinding(new DisplayOnlyKeyBind(
                 "key.quickshulker.config.keybinding",
-                KeyBinding.Category.create(Identifier.of(QuickShulkerMod.MOD_ID, "key.categories.quickshulker")),
+                KeyMapping.Category.register(Identifier.fromNamespaceAndPath(QuickShulkerMod.MOD_ID, "key.categories.quickshulker")),
                 getKeybinding(),
                 setKey -> QuickShulkerMod.config.save()
         ));

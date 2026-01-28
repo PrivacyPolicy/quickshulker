@@ -6,27 +6,27 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.quickshulker.BundleHelper;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implements CustomPayload {
-    public static final CustomPayload.Id<QuickBundlePacket> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "quick_bundle_packet"));
-    public static final PacketCodec<RegistryByteBuf, QuickBundlePacket> CODEC
-            = PacketCodec.tuple(
-            PacketCodecs.VAR_INT, QuickBundlePacket::invSlotId,
-            ItemStack.PACKET_CODEC, QuickBundlePacket::stackToBundle,
+public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<QuickBundlePacket> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(QuickShulkerMod.MOD_ID, "quick_bundle_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, QuickBundlePacket> CODEC
+            = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, QuickBundlePacket::invSlotId,
+            ItemStack.STREAM_CODEC, QuickBundlePacket::stackToBundle,
             QuickBundlePacket::new);
 
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerGlobalReceiver(ID, (payload, context) -> {
             if (context.player().isCreative()) {
-                context.server().execute(() -> BundleHelper.bundleItemIntoStack(context.player(), context.player().getInventory().getStack(payload.invSlotId()), payload.stackToBundle(), null));
+                context.server().execute(() -> BundleHelper.bundleItemIntoStack(context.player(), context.player().getInventory().getItem(payload.invSlotId()), payload.stackToBundle(), null));
             }
         });
         Unbundle.registerReceivePacket();
@@ -39,20 +39,20 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
     }
 
     public static void sendCreativeSlotUpdate(ItemStack output, Slot slot) {
-        MinecraftClient.getInstance().interactionManager.clickCreativeStack(output, slot.id);
+        Minecraft.getInstance().gameMode.handleCreativeModeItemAdd(output, slot.index);
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 
-    public record BundleIntoHeld(ItemStack stackToBundle, ItemStack bundleStack) implements CustomPayload {
-        public static final CustomPayload.Id<BundleIntoHeld> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "quick_bundleheld_packet"));
-        public static final PacketCodec<RegistryByteBuf, BundleIntoHeld> CODEC
-                = PacketCodec.tuple(
-                ItemStack.PACKET_CODEC, BundleIntoHeld::stackToBundle,
-                ItemStack.PACKET_CODEC, BundleIntoHeld::bundleStack,
+    public record BundleIntoHeld(ItemStack stackToBundle, ItemStack bundleStack) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<BundleIntoHeld> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(QuickShulkerMod.MOD_ID, "quick_bundleheld_packet"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, BundleIntoHeld> CODEC
+                = StreamCodec.composite(
+                ItemStack.STREAM_CODEC, BundleIntoHeld::stackToBundle,
+                ItemStack.STREAM_CODEC, BundleIntoHeld::bundleStack,
                 BundleIntoHeld::new);
 
         public static void registerReceivePacket() {
@@ -69,17 +69,17 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
         }
 
         @Override
-        public Id<? extends CustomPayload> getId() {
+        public Type<? extends CustomPacketPayload> type() {
             return BundleIntoHeld.ID;
         }
     }
 
-    public record Unbundle(int invSlotId, ItemStack unbundleStack) implements CustomPayload {
-        public static final CustomPayload.Id<Unbundle> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "quick_unbundle_packet"));
-        public static final PacketCodec<RegistryByteBuf, Unbundle> CODEC
-                = PacketCodec.tuple(
-                PacketCodecs.VAR_INT, Unbundle::invSlotId,
-                ItemStack.PACKET_CODEC, Unbundle::unbundleStack,
+    public record Unbundle(int invSlotId, ItemStack unbundleStack) implements CustomPacketPayload {
+        public static final CustomPacketPayload.Type<Unbundle> ID = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(QuickShulkerMod.MOD_ID, "quick_unbundle_packet"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Unbundle> CODEC
+                = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Unbundle::invSlotId,
+                ItemStack.STREAM_CODEC, Unbundle::unbundleStack,
                 Unbundle::new);
 
         public static void registerReceivePacket() {
@@ -88,7 +88,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
                     context.server().execute(() -> {
                         ItemStack output = BundleHelper.unbundleItem(context.player(), payload.unbundleStack());
                         if (output != null)
-                            context.player().getInventory().setStack(payload.invSlotId(), output);
+                            context.player().getInventory().setItem(payload.invSlotId(), output);
                     });
                 }
             });
@@ -100,7 +100,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
         }
 
         @Override
-        public Id<? extends CustomPayload> getId() {
+        public Type<? extends CustomPacketPayload> type() {
             return Unbundle.ID;
         }
     }

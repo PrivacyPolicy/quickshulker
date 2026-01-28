@@ -6,17 +6,17 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.Util;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 
-public record OpenShulkerPacket(int invSlot) implements CustomPayload {
-    public static final Id<OpenShulkerPacket> ID = new Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "open_shulker_packet"));
-    public static final PacketCodec<RegistryByteBuf, OpenShulkerPacket> CODEC
-            = PacketCodecs.VAR_INT.xmap(OpenShulkerPacket::new, OpenShulkerPacket::invSlot).cast();
+public record OpenShulkerPacket(int invSlot) implements CustomPacketPayload {
+    public static final Type<OpenShulkerPacket> ID = new Type<>(Identifier.fromNamespaceAndPath(QuickShulkerMod.MOD_ID, "open_shulker_packet"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, OpenShulkerPacket> CODEC
+            = ByteBufCodecs.VAR_INT.map(OpenShulkerPacket::new, OpenShulkerPacket::invSlot).cast();
 
 
     public static void registerReceivePacket() {
@@ -33,7 +33,7 @@ public record OpenShulkerPacket(int invSlot) implements CustomPayload {
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 

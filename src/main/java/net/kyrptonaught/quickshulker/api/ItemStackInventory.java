@@ -1,6 +1,6 @@
 package net.kyrptonaught.quickshulker.api;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 //Dummy to restore compat to mods already using this
 public class ItemStackInventory extends net.kyrptonaught.shulkerutils.ItemStackInventory {

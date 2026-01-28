@@ -3,35 +3,35 @@ package net.kyrptonaught.quickshulker.api;
 import net.kyrptonaught.quickshulker.ItemInventoryContainer;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.item.ItemStack;
 
 public class Util {
 
-    public static void openItem(PlayerEntity player, int invSlot) {
+    public static void openItem(Player player, int invSlot) {
         if (invSlot < 0) {
             System.out.println("[QuickShulker]: unknown slot opened");
             //return; //not preventing the crash might make it easier to debug a fix.
         }
-        openItem(player, invSlot, player.currentScreenHandler.slots.get(invSlot).getIndex());
+        openItem(player, invSlot, player.containerMenu.slots.get(invSlot).getContainerSlot());
     }
 
-    public static void openItem(PlayerEntity player, int invSlot, int playerInvIndex) {
-        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.currentScreenHandler).getUsedSlotInPlayerInv()) {
-            ((ServerPlayerEntity) player).closeHandledScreen();
-            OpenInventoryPacket.send((ServerPlayerEntity) player);
+    public static void openItem(Player player, int invSlot, int playerInvIndex) {
+        if (QuickShulkerMod.getConfig().rightClickClose && playerInvIndex == ((ItemInventoryContainer) player.containerMenu).getUsedSlotInPlayerInv()) {
+            ((ServerPlayer) player).closeContainer();
+            OpenInventoryPacket.send((ServerPlayer) player);
             return;
         }
-        ItemStack stack = player.getInventory().getStack(playerInvIndex);
+        ItemStack stack = player.getInventory().getItem(playerInvIndex);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);
-            ((ItemInventoryContainer) player.currentScreenHandler).setUsedSlot(playerInvIndex);
-            player.currentScreenHandler.addListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
+            ((ItemInventoryContainer) player.containerMenu).setUsedSlot(playerInvIndex);
+            player.containerMenu.addSlotListener(forceCloseScreenIfNotPresent(player, playerInvIndex, stack));
         }
     }
 
@@ -41,7 +41,7 @@ public class Util {
         return qsdata.ignoreSingleStackCheck || stack.getCount() <= 1;
     }
 
-    public static Inventory getQuickItemInventory(PlayerEntity player, ItemStack stack) {
+    public static Container getQuickItemInventory(Player player, ItemStack stack) {
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             if (qsData.supportsBundleing)
@@ -59,24 +59,24 @@ public class Util {
     }
 
     public static boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
-        return ItemStack.areItemsEqual(stack1, stack2) && ItemStack.areEqual(stack1, stack2) && stack1.getCount() == stack2.getCount();
+        return ItemStack.isSameItem(stack1, stack2) && ItemStack.matches(stack1, stack2) && stack1.getCount() == stack2.getCount();
     }
 
-    public static ScreenHandlerListener forceCloseScreenIfNotPresent(PlayerEntity player, int slotID, ItemStack stack) {
-        return new ScreenHandlerListener() {
+    public static ContainerListener forceCloseScreenIfNotPresent(Player player, int slotID, ItemStack stack) {
+        return new ContainerListener() {
             @Override
-            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+            public void slotChanged(AbstractContainerMenu handler, int slotId, ItemStack stack) {
                 isValid();
             }
 
             @Override
-            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+            public void dataChanged(AbstractContainerMenu handler, int property, int value) {
                 isValid();
             }
 
             public void isValid() {
-                if (!areItemsEqual(stack, player.getInventory().getStack(slotID))) {
-                    ((ServerPlayerEntity) player).closeHandledScreen();
+                if (!areItemsEqual(stack, player.getInventory().getItem(slotID))) {
+                    ((ServerPlayer) player).closeContainer();
                 }
             }
         };
