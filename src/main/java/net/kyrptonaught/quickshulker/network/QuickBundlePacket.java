@@ -26,7 +26,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerGlobalReceiver(ID, (payload, context) -> {
             if (context.player().isCreative()) {
-                context.player().getServer().execute(() -> BundleHelper.bundleItemIntoStack(context.player(), context.player().getInventory().getStack(payload.invSlotId()), payload.stackToBundle(), null));
+                context.server().execute(() -> BundleHelper.bundleItemIntoStack(context.player(), context.player().getInventory().getStack(payload.invSlotId()), payload.stackToBundle(), null));
             }
         });
         Unbundle.registerReceivePacket();
@@ -58,7 +58,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
         public static void registerReceivePacket() {
             ServerPlayNetworking.registerGlobalReceiver(BundleIntoHeld.ID, (payload, context) -> {
                 if (context.player().isCreative()) {
-                    context.player().getServer().execute(() -> BundleHelper.bundleItemIntoStack(context.player(), payload.bundleStack(), payload.stackToBundle(), null));
+                    context.server().execute(() -> BundleHelper.bundleItemIntoStack(context.player(), payload.bundleStack(), payload.stackToBundle(), null));
                 }
             });
         }
@@ -85,7 +85,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
         public static void registerReceivePacket() {
             ServerPlayNetworking.registerGlobalReceiver(Unbundle.ID, (payload, context) -> {
                 if (context.player().isCreative()) {
-                    context.player().getServer().execute(() -> {
+                    context.server().execute(() -> {
                         ItemStack output = BundleHelper.unbundleItem(context.player(), payload.unbundleStack());
                         if (output != null)
                             context.player().getInventory().setStack(payload.invSlotId(), output);

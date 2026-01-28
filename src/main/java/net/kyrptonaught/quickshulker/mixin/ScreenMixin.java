@@ -6,7 +6,9 @@ import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.client.ClientUtil;
 import net.kyrptonaught.quickshulker.client.QuickShulkerModClient;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -44,9 +46,9 @@ public abstract class ScreenMixin {
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void QS$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    private void QS$keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (QuickShulkerModClient.getKeybinding().matches(keyCode, InputUtil.Type.KEYSYM)) {
+            if (QuickShulkerModClient.getKeybinding().matches(input.key(), InputUtil.Type.KEYSYM)) {
                 if (handleTrigger())
                     cir.setReturnValue(true);
             }
@@ -54,9 +56,9 @@ public abstract class ScreenMixin {
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void QS$mousePressed(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+    private void QS$mousePressed(Click click, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
         if (QuickShulkerMod.getConfig().rightClickInv) {
-            if (this.handler.getCursorStack().isEmpty() && button == 1 && this.focusedSlot != null && this.focusedSlot.getStack().getCount() == 1) {
+            if (this.handler.getCursorStack().isEmpty() && click.button() == 1 && this.focusedSlot != null && this.focusedSlot.getStack().getCount() == 1) {
                 if (handleTrigger()) {
                     this.cancelNextRelease = true;
                     cir.setReturnValue(true);
@@ -65,7 +67,7 @@ public abstract class ScreenMixin {
             }
         }
         if (QuickShulkerMod.getConfig().keybingInInv) {
-            if (QuickShulkerModClient.getKeybinding().matches(button, InputUtil.Type.MOUSE)) {
+            if (QuickShulkerModClient.getKeybinding().matches(click.button(), InputUtil.Type.MOUSE)) {
                 if (handleTrigger()) {
                     this.cancelNextRelease = true;
                     cir.setReturnValue(true);
