@@ -16,7 +16,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
 public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implements CustomPayload {
-    public static final CustomPayload.Id<QuickBundlePacket> ID = new CustomPayload.Id<>(new Identifier(QuickShulkerMod.MOD_ID, "quick_bundle_packet"));
+    public static final CustomPayload.Id<QuickBundlePacket> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "quick_bundle_packet"));
     public static final PacketCodec<RegistryByteBuf, QuickBundlePacket> CODEC
             = PacketCodec.tuple(
             PacketCodecs.VAR_INT, QuickBundlePacket::invSlotId,
@@ -48,7 +48,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
     }
 
     public record BundleIntoHeld(ItemStack stackToBundle, ItemStack bundleStack) implements CustomPayload {
-        public static final CustomPayload.Id<BundleIntoHeld> ID = new CustomPayload.Id<>(new Identifier(QuickShulkerMod.MOD_ID, "quick_bundleheld_packet"));
+        public static final CustomPayload.Id<BundleIntoHeld> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "quick_bundleheld_packet"));
         public static final PacketCodec<RegistryByteBuf, BundleIntoHeld> CODEC
                 = PacketCodec.tuple(
                 ItemStack.PACKET_CODEC, BundleIntoHeld::stackToBundle,
@@ -75,7 +75,7 @@ public record QuickBundlePacket(int invSlotId, ItemStack stackToBundle) implemen
     }
 
     public record Unbundle(int invSlotId, ItemStack unbundleStack) implements CustomPayload {
-        public static final CustomPayload.Id<Unbundle> ID = new CustomPayload.Id<>(new Identifier(QuickShulkerMod.MOD_ID, "quick_unbundle_packet"));
+        public static final CustomPayload.Id<Unbundle> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "quick_unbundle_packet"));
         public static final PacketCodec<RegistryByteBuf, Unbundle> CODEC
                 = PacketCodec.tuple(
                 PacketCodecs.VAR_INT, Unbundle::invSlotId,

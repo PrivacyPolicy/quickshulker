@@ -14,7 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 
 public record OpenShulkerPacket(int invSlot) implements CustomPayload {
-    public static final Id<OpenShulkerPacket> ID = new Id<>(new Identifier(QuickShulkerMod.MOD_ID, "open_shulker_packet"));
+    public static final Id<OpenShulkerPacket> ID = new Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "open_shulker_packet"));
     public static final PacketCodec<RegistryByteBuf, OpenShulkerPacket> CODEC
             = PacketCodecs.VAR_INT.xmap(OpenShulkerPacket::new, OpenShulkerPacket::invSlot).cast();
 

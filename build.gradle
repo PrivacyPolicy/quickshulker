@@ -1,15 +1,13 @@
 plugins {
-	id 'fabric-loom' version '1.10-SNAPSHOT'
+	id 'fabric-loom' version '1.15-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
+base {
+	archivesName = project.archives_base_name
+	version = project.mod_version
+	group = project.maven_group
+}
 
 loom {
 	accessWidenerPath = file("src/main/resources/quickshulker.accesswidener")
@@ -27,27 +25,29 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation include("net.kyrptonaught:kyrptconfig:1.6.1-1.20.5") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include("net.kyrptonaught:kyrptconfig:1.6.1-1.21.4") { exclude group: "net.fabricmc.fabric-api" }
 
 	//update modmenu when kyrptconfig is pulling old version
-	modImplementation ("com.terraformersmc:modmenu:10.0.0") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation ("com.terraformersmc:modmenu:13.0.0") { exclude group: "net.fabricmc.fabric-api" }
 
 	//shulkerutils
-	modImplementation 'net.kyrptonaught:shulkerutils:1.0.5-1.20.5'
-	include 'net.kyrptonaught:shulkerutils:1.0.5-1.20.5'
+	modImplementation 'net.kyrptonaught:shulkerutils:1.0.5-1.21.4'
+	include 'net.kyrptonaught:shulkerutils:1.0.5-1.21.4'
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release = 21
 }
 
 java {
 	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}" }
+		rename { "${it}_${base.archivesName.get()}" }
 	}
 }
 
@@ -59,7 +59,7 @@ repositories {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			artifactId archivesBaseName
+			artifactId = project.archives_base_name
 			from components.java
 		}
 	}
