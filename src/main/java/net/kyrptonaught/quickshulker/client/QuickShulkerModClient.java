@@ -6,12 +6,15 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.kyrptconfig.keybinding.DisplayOnlyKeyBind;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
+import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
+import net.kyrptonaught.quickshulker.network.QuickBundlePacket;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,10 +35,13 @@ public class QuickShulkerModClient implements ClientModInitializer {
                 }
             }
         });
-        ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.OPEN_INV, (client, handler, packet, sender) -> {
+        PayloadTypeRegistry.playS2C().register(OpenInventoryPacket.ID, OpenInventoryPacket.CODEC);
+        ClientPlayNetworking.registerGlobalReceiver(OpenInventoryPacket.ID, (payload, context) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
             client.execute(() -> {
-                client.setScreen(new InventoryScreen(client.player));
+                client.setScreen(new InventoryScreen(context.player()));
             });
+
         });
         FabricLoader.getInstance().getEntrypoints(QuickShulkerMod.MOD_ID + "_client", RegisterQuickShulkerClient.class).forEach(RegisterQuickShulkerClient::registerClient);
 
