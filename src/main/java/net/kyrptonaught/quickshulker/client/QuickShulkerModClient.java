@@ -13,8 +13,6 @@ import net.kyrptonaught.kyrptconfig.keybinding.DisplayOnlyKeyBind;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
-import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
-import net.kyrptonaught.quickshulker.network.QuickBundlePacket;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +29,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
                     if (player.getMainHandStack().isEmpty() && !player.getOffHandStack().isEmpty())
                         ClientUtil.CheckAndSend(player.getOffHandStack(), 45);
                     else
-                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.getInventory().selectedSlot);
+                        ClientUtil.CheckAndSend(player.getMainHandStack(), 36 + player.getInventory().getSelectedSlot());
                 }
             }
         });

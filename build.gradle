@@ -25,14 +25,14 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation include("net.kyrptonaught:kyrptconfig:1.6.1-1.21.4") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation include("net.kyrptonaught:kyrptconfig:1.6.1-1.21.5") { exclude group: "net.fabricmc.fabric-api" }
 
 	//update modmenu when kyrptconfig is pulling old version
-	modImplementation ("com.terraformersmc:modmenu:13.0.0") { exclude group: "net.fabricmc.fabric-api" }
+	modImplementation ("com.terraformersmc:modmenu:14.0.1") { exclude group: "net.fabricmc.fabric-api" }
 
 	//shulkerutils
-	modImplementation 'net.kyrptonaught:shulkerutils:1.0.5-1.21.4'
-	include 'net.kyrptonaught:shulkerutils:1.0.5-1.21.4'
+	modImplementation 'net.kyrptonaught:shulkerutils:1.0.5-1.21.5'
+	include 'net.kyrptonaught:shulkerutils:1.0.5-1.21.5'
 }
 
 tasks.withType(JavaCompile).configureEach {
