@@ -1,7 +1,7 @@
 package net.kyrptonaught.quickshulker.client;
 
 import net.kyrptonaught.quickshulker.api.Util;
-import net.kyrptonaught.quickshulker.mixin.CreativeSlotMixin;
+import net.kyrptonaught.quickshulker.mixin.SlotWrapperMixin;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -32,7 +32,7 @@ public class ClientUtil {
     public static int getSlotId(AbstractContainerMenu handler, Slot slot) {
         if (handler instanceof CreativeModeInventoryScreen.ItemPickerMenu) {
             if (((CreativeModeInventoryScreen) Minecraft.getInstance().screen).isInventoryOpen() && slot instanceof CreativeModeInventoryScreen.SlotWrapper) {
-                return ((CreativeSlotMixin) slot).getSlot().index;
+                return ((SlotWrapperMixin) slot).getSlot().index;
             } else {
                 return slot.index - 9;
             }
@@ -43,7 +43,7 @@ public class ClientUtil {
     public static int getPlayerInvSlot(AbstractContainerMenu handler, Slot slot) {
         if (handler instanceof CreativeModeInventoryScreen.ItemPickerMenu) {
             if (((CreativeModeInventoryScreen) Minecraft.getInstance().screen).isInventoryOpen() && slot instanceof CreativeModeInventoryScreen.SlotWrapper) {
-                return ((CreativeSlotMixin) slot).getSlot().getContainerSlot();
+                return ((SlotWrapperMixin) slot).getSlot().getContainerSlot();
             }
         }
         return slot.getContainerSlot();

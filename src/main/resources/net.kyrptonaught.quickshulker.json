@@ -9,7 +9,7 @@
   ],
   "client": [
     "ScreenMixin",
-    "CreativeSlotMixin"
+    "SlotWrapperMixin"
   ],
   "injectors": {
     "defaultRequire": 1

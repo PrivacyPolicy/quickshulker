@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(CreativeModeInventoryScreen.SlotWrapper.class)
-public interface CreativeSlotMixin {
+public interface SlotWrapperMixin {
 
     @Accessor(value = "target")
     Slot getSlot();

@@ -11,7 +11,6 @@ import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.kyrptonaught.quickshulker.network.QuickBundlePacket;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.screen.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
