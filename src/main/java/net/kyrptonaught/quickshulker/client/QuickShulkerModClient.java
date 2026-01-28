@@ -15,7 +15,9 @@ import net.kyrptonaught.quickshulker.api.RegisterQuickShulkerClient;
 import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class QuickShulkerModClient implements ClientModInitializer {
@@ -45,7 +47,7 @@ public class QuickShulkerModClient implements ClientModInitializer {
 
         KeyBindingHelper.registerKeyBinding(new DisplayOnlyKeyBind(
                 "key.quickshulker.config.keybinding",
-                "key.categories.quickshulker",
+                KeyBinding.Category.create(Identifier.of(QuickShulkerMod.MOD_ID, "key.categories.quickshulker")),
                 getKeybinding(),
                 setKey -> QuickShulkerMod.config.save()
         ));

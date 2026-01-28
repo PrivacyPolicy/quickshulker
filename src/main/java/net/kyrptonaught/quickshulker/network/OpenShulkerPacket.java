@@ -21,7 +21,7 @@ public record OpenShulkerPacket(int invSlot) implements CustomPayload {
 
     public static void registerReceivePacket() {
         ServerPlayNetworking.registerGlobalReceiver(ID, (payload, context) -> {
-            MinecraftServer server = context.player().getServer();
+            MinecraftServer server = context.server();
             int invSlot = payload.invSlot();
             server.execute(() -> Util.openItem(context.player(), invSlot));
         });
