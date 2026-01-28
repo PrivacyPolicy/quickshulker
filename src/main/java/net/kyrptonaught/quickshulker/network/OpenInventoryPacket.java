@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class OpenInventoryPacket implements CustomPayload {
-    public static final CustomPayload.Id<OpenInventoryPacket> ID = new CustomPayload.Id<>(new Identifier(QuickShulkerMod.MOD_ID, "openinv"));
+    public static final CustomPayload.Id<OpenInventoryPacket> ID = new CustomPayload.Id<>(Identifier.of(QuickShulkerMod.MOD_ID, "openinv"));
     public static final PacketCodec<RegistryByteBuf, OpenInventoryPacket> CODEC
             = PacketCodec.ofStatic((buf, value) -> {}, buf -> new OpenInventoryPacket());
 
