@@ -6,7 +6,6 @@ import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,7 +27,6 @@ public class Util {
             return;
         }
         ItemStack stack = player.getInventory().getStack(playerInvIndex);
-        stack.removeSubNbt(QuickShulkerMod.MOD_ID);
         QuickShulkerData qsData = QuickOpenableRegistry.getQuickie(stack.getItem());
         if (qsData != null) {
             qsData.openConsumer.accept(player, stack);

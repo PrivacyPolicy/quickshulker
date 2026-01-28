@@ -2,16 +2,19 @@ package net.kyrptonaught.quickshulker;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyrptonaught.kyrptconfig.config.ConfigManager;
 import net.kyrptonaught.quickshulker.api.*;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
+import net.kyrptonaught.quickshulker.network.OpenInventoryPacket;
 import net.kyrptonaught.quickshulker.network.OpenShulkerPacket;
 import net.kyrptonaught.quickshulker.network.QuickBundlePacket;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.StonecutterBlock;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
@@ -28,8 +31,13 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
     @Override
     public void onInitialize() {
         config.load();
+        PayloadTypeRegistry.playC2S().register(OpenShulkerPacket.ID, OpenShulkerPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(QuickBundlePacket.ID, QuickBundlePacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(QuickBundlePacket.BundleIntoHeld.ID, QuickBundlePacket.BundleIntoHeld.CODEC);
+        PayloadTypeRegistry.playC2S().register(QuickBundlePacket.Unbundle.ID, QuickBundlePacket.Unbundle.CODEC);
         OpenShulkerPacket.registerReceivePacket();
         QuickBundlePacket.registerReceivePacket();
+
         UseItemCallback.EVENT.register((player, world, hand) -> {
             ItemStack stack = player.getStackInHand(hand);
             if (!world.isClient) {
@@ -59,7 +67,7 @@ public class QuickShulkerMod implements ModInitializer, RegisterQuickShulker {
                     .setItem(ShulkerBoxBlock.class)
                     .supportsBundleing(true)
                     .setOpenAction(((player, stack) -> player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
-                            new ShulkerBoxScreenHandler(i, player.getInventory(), new ItemStackInventory(stack, 27)), stack.hasCustomName() ? stack.getName() : Text.translatable("container.shulkerBox")))))
+                            new ShulkerBoxScreenHandler(i, player.getInventory(), new ItemStackInventory(stack, 27)), stack.getComponents().contains(DataComponentTypes.CUSTOM_NAME) ? stack.getName() : Text.translatable("container.shulkerBox")))))
                     .register();
 
         if (getConfig().quickEChest)
