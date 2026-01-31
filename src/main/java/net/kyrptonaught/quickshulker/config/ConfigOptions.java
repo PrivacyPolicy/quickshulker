@@ -4,6 +4,7 @@ import blue.endless.jankson.Comment;
 import net.kyrptonaught.kyrptconfig.config.AbstractConfigFile;
 import net.kyrptonaught.kyrptconfig.keybinding.CustomKeyBinding;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
+import net.minecraft.util.ClickType;
 
 public class ConfigOptions implements AbstractConfigFile {
     public static String defualtKeybind = "key.keyboard.k";
@@ -20,6 +21,8 @@ public class ConfigOptions implements AbstractConfigFile {
 
     @Comment("Right Clicking the opened shulker in your inv closes it")
     public boolean rightClickClose = false;
+    @Comment("Whether to use Left/Right Click to insert items")
+    public MouseButton insertMouseButton = MouseButton.LEFT;
     @Comment("Right Clicking a shulker with an item inserts it")
     public boolean supportsBundlingInsert = true;
     @Comment("Right Clicking an item with a shulker inserts it")

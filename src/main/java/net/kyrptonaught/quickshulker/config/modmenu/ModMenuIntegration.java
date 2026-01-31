@@ -7,10 +7,12 @@ import net.fabricmc.api.Environment;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigScreen;
 import net.kyrptonaught.kyrptconfig.config.screen.ConfigSection;
 import net.kyrptonaught.kyrptconfig.config.screen.items.BooleanItem;
+import net.kyrptonaught.kyrptconfig.config.screen.items.EnumItem;
 import net.kyrptonaught.kyrptconfig.config.screen.items.KeybindItem;
 import net.kyrptonaught.kyrptconfig.config.screen.items.SubItem;
 import net.kyrptonaught.quickshulker.QuickShulkerMod;
 import net.kyrptonaught.quickshulker.config.ConfigOptions;
+import net.kyrptonaught.quickshulker.config.MouseButton;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -35,6 +37,9 @@ public class ModMenuIntegration implements ModMenuApi {
 
             ConfigSection optionsSection = new ConfigSection(configScreen, Text.translatable("key.quickshulker.config.category.options"));
             optionsSection.addConfigItem(new BooleanItem(Text.translatable("key.quickshulker.config.rightClickClose"), options.rightClickClose, false).setSaveConsumer(value -> options.rightClickClose = value));
+            optionsSection.addConfigItem(new EnumItem<>(Text.translatable("key.quickshulker.config.insertMouseButton"), MouseButton.values(), options.insertMouseButton, MouseButton.LEFT)
+                    .setSaveConsumer(value -> options.insertMouseButton = value)
+                    .setToolTip(Text.translatable("key.quickshulker.config.insertMouseButtonTooltip")));
 
             SubItem subItem = (SubItem) optionsSection.addConfigItem(new SubItem(Text.translatable("key.quickshulker.config.category.bundleing"), true));
             subItem.addConfigItem(new BooleanItem(Text.translatable("key.quickshulker.config.supportsBundlingInsert"), options.supportsBundlingInsert, true).setSaveConsumer(value -> options.supportsBundlingInsert = value));
