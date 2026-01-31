@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.kyrptonaught.quickshulker.api.QuickOpenableRegistry;
 import net.kyrptonaught.quickshulker.api.QuickShulkerData;
 import net.kyrptonaught.quickshulker.api.Util;
+import net.kyrptonaught.quickshulker.config.MouseButton;
 import net.kyrptonaught.shulkerutils.ShulkerUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -15,8 +16,8 @@ import net.minecraft.util.ClickType;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 public class BundleHelper {
-    public static boolean shouldAttemptBundle(PlayerEntity player, ClickType clickType, ItemStack hostStack, ItemStack insertStack, boolean enabledInConfig) {
-        return (enabledInConfig && clickType == ClickType.RIGHT && Util.isOpenableItem(hostStack) && isAcceptedInsertItem(insertStack) && Util.getQuickItemInventory(player, hostStack) != null);
+    public static boolean shouldAttemptBundle(PlayerEntity player, ClickType clickType, ItemStack hostStack, ItemStack insertStack, boolean enabledInConfig, MouseButton expectedClick) {
+        return (enabledInConfig && clickType == expectedClick.getClickType() && Util.isOpenableItem(hostStack) && isAcceptedInsertItem(insertStack) && Util.getQuickItemInventory(player, hostStack) != null);
     }
 
     public static boolean shouldAttemptUnBundle(PlayerEntity player, ClickType clickType, ItemStack hostStack, ItemStack insertStack, boolean enabledInConfig) {
